@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rubygems'
 require 'mqtt'
 require 'json'
@@ -16,7 +18,25 @@ connect_info = {
   :keep_alive => 60,
 }
 
-def insert_data(data)
+def create_app
+  begin
+      db = SQLite3::Database.open "db/loramns.db"
+      db.execute "CREATE TABLE IF NOT EXISTS Applications (name TEXT,
+                                                           username TEXT,
+                                                           node_addr TEXT
+                                                           )"
+      db.execute "INSERT INTO Applications VALUES(?,?,?)", name, username, node_addr
+
+  rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+
+  ensure
+      db.close if db
+  end
+end
+
+def insert_node_data(data)
   begin
       db = SQLite3::Database.open "db/loramns.db"
       db.execute "CREATE TABLE IF NOT EXISTS Nodes (channel INT,
@@ -51,7 +71,7 @@ MQTT::Client.connect(connect_info) do |c|
   c.get("GIOT-GW/UL/#{GW_MAC}") do |topic,message|
     # Block is executed for every message received
     message_json = JSON.parse(message)
-    insert_data(message_json)
+    insert_node_data(message_json)
     devAddr = message_json[0]["macAddr"][8,16]
     puts "#{topic} = #{message}"
     puts devAddr
