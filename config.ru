@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-require './init.rb'
 
-require 'faye'
-use Faye::RackAdapter, :mount => '/faye', :timeout => 25
+# require './init.rb'
+require './controllers/main_controller.rb'
 
-run Sinatra::Application
+run LORAWAN_NMS_API

@@ -7,12 +7,6 @@ require 'net/ssh'
 @username = 'root'
 @password = 'gemtek'
 
-# node_info = {
-#   "DevAddr" => "cccccccc",
-#   "NwkSKey" => "cccccccccccccccccccccccccccccccc",
-#   "AppSKey" => "cccccccccccccccccccccccccccccccc"
-# }
-
 DevAddr = 'aaaaaaaa'
 NwkSKey = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 AppSKey = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
