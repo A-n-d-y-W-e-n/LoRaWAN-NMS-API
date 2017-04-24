@@ -52,13 +52,15 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.execute "SELECT * FROM Nodes WHERE macAddr = ? ",node_addr do |row|
         return row
       end
-    rescue
-      halt 404, "LoRaWAN Node (address: #{:node_addr}) not found"
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN Node (address: #{:node_addr}) not found!"
     end
   end
 
   # insert the info of a node into DB
-  post "/app/:username/:app_name/:node_addr/?" do
+  get "/app/:username/:app_name/:node_addr/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
@@ -73,7 +75,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
-      halt 404, "LoRaWAN Application (name: #{app_name}) cannot be created"
+      halt 404, "LoRaWAN Application (name: #{app_name}) cannot be created!"
     ensure
       db.close if db
     end
@@ -95,7 +97,7 @@ class LORAWAN_NMS_API < Sinatra::Base
       ssh.close
       puts res
     rescue
-      halt 404, "Unable to connect to #{@hostname} using #{@username}/#{@password}"
+      halt 404, "Unable to connect to #{@hostname} using #{@username}/#{@password}!"
     end
   end
 
