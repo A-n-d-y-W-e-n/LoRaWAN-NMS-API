@@ -39,7 +39,8 @@ end
 def insert_node_data(data)
   begin
       db = SQLite3::Database.open "db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Nodes (channel INT,
+      db.execute "CREATE TABLE IF NOT EXISTS Nodes (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                    channel INT,
                                                     sf INT,
                                                     time TEXT,
                                                     gwip TEXT,
@@ -55,7 +56,7 @@ def insert_node_data(data)
                                                     frameCnt INT,
                                                     fport INT
                                                     )"
-      db.execute "INSERT INTO Nodes VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", data[0]['channel'], data[0]['sf'], data[0]['time'], data[0]['gwip'], data[0]['gwid'], data[0]['repeater'], data[0]['systype'], data[0]['rssi'],
+      db.execute "INSERT INTO Nodes VALUES(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", data[0]['channel'], data[0]['sf'], data[0]['time'], data[0]['gwip'], data[0]['gwid'], data[0]['repeater'], data[0]['systype'], data[0]['rssi'],
         data[0]['snr'], data[0]['snr_max'], data[0]['snr_min'], data[0]['macAddr'], data[0]['data'], data[0]['frameCnt'], data[0]['fport']
 
   rescue SQLite3::Exception => e
