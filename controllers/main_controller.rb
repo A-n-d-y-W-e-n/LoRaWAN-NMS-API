@@ -14,8 +14,9 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT DISTINCT app_name FROM Applications WHERE username = ?",username do |row|
-        return row
+        return row.to_json
       end
+    content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -32,8 +33,9 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT node_addr FROM Applications WHERE username = ? AND app_name = ? ",username, app_name do |row|
-        return row
+        return row.to_json
       end
+      content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -50,8 +52,9 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT * FROM Nodes WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
-        return row
+        return row.to_json
       end
+      content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -107,8 +110,9 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT gateway_mac FROM Gateways WHERE gateway_name = ? ",gateway_name do |row|
-        return row
+        return row.to_json
       end
+      content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -144,8 +148,9 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT password FROM Users WHERE username = ? ",username do |row|
-        return row
+        return row.to_json
       end
+      content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
