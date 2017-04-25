@@ -13,7 +13,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     username = params[:username]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT app_name FROM Applications WHERE username = ?",username do |row|
+      db.execute "SELECT DISTINCT app_name FROM Applications WHERE username = ?",username do |row|
         return row
       end
     rescue SQLite3::Exception => e
@@ -49,7 +49,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     puts node_addr
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Nodes WHERE macAddr = ? ",node_addr do |row|
+      db.execute "SELECT * FROM Nodes WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
         return row
       end
     rescue SQLite3::Exception => e
@@ -60,7 +60,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the info of a node into DB
-  get "/app/:username/:app_name/:node_addr/?" do
+  post "/app/:username/:app_name/:node_addr/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
@@ -82,7 +82,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the key of the node into dateway DB
-  get "/node/abp/:DevAddr/:NwkSKey/:AppSKey/?" do
+  post "/node/abp/:DevAddr/:NwkSKey/:AppSKey/?" do
     @hostname = '192.168.88.1'
     @username = 'root'
     @password = 'gemtek'
@@ -101,12 +101,76 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # post "//?" do
-  #    = params[:]
-  #   begin
-  #
-  #   rescue
-  #
-  #   end
-  # end
+  # get the gateway info from gateway DB
+  get "/gateway/:gateway_name?" do
+    gateway_name = params[:gateway_name]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "SELECT gateway_mac FROM Gateways WHERE gateway_name = ? ",gateway_name do |row|
+        return row
+      end
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN User (username: #{:username}) not found!"
+    end
+  end
+
+  # insert the gateway info into DB
+  post "/gateway/:gateway_name/:gateway_mac/:gateway_ip/?" do
+    gateway_name = params[:gateway_name]
+    gateway_mac = params[:gateway_mac]
+    gateway_ip = params[:gateway_ip]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "CREATE TABLE IF NOT EXISTS Gateways (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                       gateway_name TEXT UNIQUE,
+                                                       gateway_mac TEXT UNIQUE,
+                                                       gateway_ip  TEXT UNIQUE
+                                                       )"
+      db.execute "INSERT INTO Gateways VALUES(null,?,?,?)", gateway_name, gateway_mac, gateway_ip
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN Gateway (MAC Address: #{gateway_mac}) cannot be created!"
+    ensure
+      db.close if db
+    end
+  end
+
+  # get the user info from DB
+  get "/user/:username/?" do
+    username = params[:username]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "SELECT password FROM Users WHERE username = ? ",username do |row|
+        return row
+      end
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN User (username: #{:username}) not found!"
+    end
+  end
+
+  # insert the user info into DB
+  post "/user/:username/:password/?" do
+    username = params[:username]
+    password = params[:password]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "CREATE TABLE IF NOT EXISTS Users (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                    username TEXT UNIQUE,
+                                                    password TEXT
+                                                    )"
+      db.execute "INSERT INTO Users VALUES(null,?,?)", username, password
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN User (username: #{username}) cannot be created!"
+    ensure
+      db.close if db
+    end
+  end
+
 end
