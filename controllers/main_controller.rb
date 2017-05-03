@@ -8,6 +8,28 @@ require 'net/ssh'
 
 class LORAWAN_NMS_API < Sinatra::Base
 
+  # create an application into DB
+  post "/app/:username/:app_name/:app_description/?" do
+    username = params[:username]
+    app_name = params[:app_name]
+    app_description = params[:app_description]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "CREATE TABLE IF NOT EXISTS Applications (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                           username TEXT,
+                                                           app_name TEXT UNIQUE,
+                                                           app_description TEXT
+                                                           )"
+      db.execute "INSERT INTO Applications VALUES(null,?,?,?)", username, app_name, app_description
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
+    ensure
+      db.close if db
+    end
+  end
+
   # get all applications of a user from DB
   get "/app/:username/?" do
     username = params[:username]
@@ -27,12 +49,12 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # get all nodes of an application of a user from DB
-  get "/app/:username/:app_name/?" do
+  get "/node/:username/:app_name/?" do
     username = params[:username]
     app_name = params[:app_name]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT node_addr FROM Applications WHERE username = ? AND app_name = ? ",username, app_name do |row|
+      db.execute "SELECT node_addr FROM Nodes WHERE username = ? AND app_name = ? ",username, app_name do |row|
         return row.to_json
       end
       content_type 'application/json'
@@ -46,39 +68,39 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # get the last received data of a node from DB
-  get "/node/:node_addr/?" do
+  get "/node_data/:node_addr/?" do
     node_addr = '00000000' + params[:node_addr]
     puts node_addr
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Nodes WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
+      db.execute "SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
         return row.to_json
       end
       content_type 'application/json'
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
-      halt 404, "LoRaWAN Node (address: #{:node_addr}) not found!"
+      halt 404, "LoRaWAN Node Data (address: #{:node_addr}) not found!"
     end
   end
 
   # insert the info of a node into DB
-  post "/app/:username/:app_name/:node_addr/?" do
+  post "/node/:username/:app_name/:node_addr/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Applications (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+      db.execute "CREATE TABLE IF NOT EXISTS Nodes (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                            username TEXT,
                                                            app_name TEXT,
                                                            node_addr TEXT UNIQUE
                                                            )"
-      db.execute "INSERT INTO Applications VALUES(null,?,?,?)", username, app_name, node_addr
+      db.execute "INSERT INTO Nodes VALUES(null,?,?,?)", username, app_name, node_addr
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
-      halt 404, "LoRaWAN Application (name: #{app_name}) cannot be created!"
+      halt 404, "LoRaWAN Node (app_name: #{app_name}) cannot be created!"
     ensure
       db.close if db
     end
@@ -109,7 +131,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     gateway_name = params[:gateway_name]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT gateway_mac FROM Gateways WHERE gateway_name = ? ",gateway_name do |row|
+      db.execute "SELECT * FROM Gateways WHERE gateway_name = ? ",gateway_name do |row|
         return row.to_json
       end
       content_type 'application/json'
@@ -121,18 +143,20 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the gateway info into DB
-  post "/gateway/:gateway_name/:gateway_mac/:gateway_ip/?" do
+  post "/gateway/:gateway_name/:gateway_mac/:gateway_ip/:gateway_loc/?" do
     gateway_name = params[:gateway_name]
     gateway_mac = params[:gateway_mac]
     gateway_ip = params[:gateway_ip]
+    gateway_loc = params[:gateway_loc]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "CREATE TABLE IF NOT EXISTS Gateways (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                        gateway_name TEXT UNIQUE,
                                                        gateway_mac TEXT UNIQUE,
-                                                       gateway_ip  TEXT UNIQUE
+                                                       gateway_ip  TEXT UNIQUE,
+                                                       gateway_loc
                                                        )"
-      db.execute "INSERT INTO Gateways VALUES(null,?,?,?)", gateway_name, gateway_mac, gateway_ip
+      db.execute "INSERT INTO Gateways VALUES(null,?,?,?,?)", gateway_name, gateway_mac, gateway_ip, gateway_loc
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e

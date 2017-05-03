@@ -22,7 +22,7 @@ connect_info = {
 def insert_node_data_and_find_route(data)
   begin
     db = SQLite3::Database.open "db/loramns.db"
-    db.execute "CREATE TABLE IF NOT EXISTS Nodes (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    db.execute "CREATE TABLE IF NOT EXISTS Nodes_data (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                   channel INT,
                                                   sf INT,
                                                   time TEXT,
