@@ -30,10 +30,14 @@ class LORAWAN_NMS_API < Sinatra::Base
       content_type 'application/json'
       data=[]
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT app_name FROM Applications WHERE username = ?",username do |row|
-        data << row.to_json
+      db.execute "SELECT app_name, app_description FROM Applications WHERE username = ?",username do |row|
+        data << row
       end
-      return data
+      a = data.map {|s| {app_name: s[0], app_description: s[1]} }
+      puts a.to_json
+
+      return a.to_json
+
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
