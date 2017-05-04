@@ -27,11 +27,13 @@ class LORAWAN_NMS_API < Sinatra::Base
   get "/app/:username/?" do
     username = params[:username]
     begin
+      content_type 'application/json'
+      data=[]
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT DISTINCT app_name FROM Applications WHERE username = ?",username do |row|
-        return row.to_json
+      db.execute "SELECT app_name FROM Applications WHERE username = ?",username do |row|
+        data << row.to_json
       end
-    content_type 'application/json'
+      return data
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e

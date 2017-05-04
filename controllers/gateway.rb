@@ -25,11 +25,13 @@ class LORAWAN_NMS_API < Sinatra::Base
   get "/gateway/:gateway_name?" do
     gateway_name = params[:gateway_name]
     begin
+      content_type 'application/json'
+      data=[]
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT * FROM Gateways WHERE gateway_name = ? ",gateway_name do |row|
-        return row.to_json
+        data << row.to_json
       end
-      content_type 'application/json'
+      return data
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e

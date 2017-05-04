@@ -6,11 +6,13 @@ class LORAWAN_NMS_API < Sinatra::Base
     username = params[:username]
     app_name = params[:app_name]
     begin
+      content_type 'application/json'
+      data=[]
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT node_addr FROM Nodes WHERE username = ? AND app_name = ? ",username, app_name do |row|
-        return row.to_json
+        data << row.to_json
       end
-      content_type 'application/json'
+      return data
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -25,11 +27,13 @@ class LORAWAN_NMS_API < Sinatra::Base
     node_addr = '00000000' + params[:node_addr]
     puts node_addr
     begin
+      content_type 'application/json'
+      data=[]
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
-        return row.to_json
+        data << row.to_json
       end
-      content_type 'application/json'
+      return data
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
