@@ -5,8 +5,8 @@ Sequel.migration do
   change do
     create_table(:applications) do
       primary_key :id
-      String :username
-      String :app_name
+      String :username, :null=>false
+      String :app_name, :null=>false
       String :app_description
 
       unique [:app_name]

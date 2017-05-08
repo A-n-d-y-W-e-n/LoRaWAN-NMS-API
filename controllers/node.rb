@@ -64,8 +64,8 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # delete a node od an app
-  delete "/node/:username/:app_name/:node_addr/?" do
+  # delete a node of an app
+  post "/delete_node/:username/:app_name/:node_addr/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
