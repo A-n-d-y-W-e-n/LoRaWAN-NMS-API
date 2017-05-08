@@ -20,16 +20,18 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the user info into DB
-  post "/user/:username/:password/?" do
+  post "/user/:username/:user_email/:password/?" do
     username = params[:username]
+    user_email = params[:user_email]
     password = params[:password]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "CREATE TABLE IF NOT EXISTS Users (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                     username TEXT UNIQUE,
+                                                    user_email TEXT UNIQUE,
                                                     password TEXT
                                                     )"
-      db.execute "INSERT INTO Users VALUES(null,?,?)", username, password
+      db.execute "INSERT INTO Users VALUES(null,?,?,?)", username, user_email, password
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
