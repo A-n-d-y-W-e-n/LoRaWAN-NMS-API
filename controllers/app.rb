@@ -2,7 +2,7 @@
 class LORAWAN_NMS_API < Sinatra::Base
 
   # create an application into DB
-  get "/app/:username/:app_name/:app_description/?" do
+  post "/app/:username/:app_name/:app_description/?" do
     username = params[:username]
     app_name = params[:app_name]
     app_description = params[:app_description]
@@ -23,7 +23,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # get "/app/:username/:app_name/:app_description/?" do
+  # post "/app/:username/:app_name/:app_description/?" do
   #   username = params[:username]
   #   app_name = params[:app_name]
   #   app_description = params[:app_description]

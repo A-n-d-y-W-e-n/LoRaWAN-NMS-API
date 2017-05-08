@@ -63,4 +63,21 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.close if db
     end
   end
+
+  # delete a node od an app
+  delete "/node/:username/:app_name/:node_addr/?" do
+    username = params[:username]
+    app_name = params[:app_name]
+    node_addr = params[:node_addr]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "DELETE FROM Nodes WHERE username=? AND app_name=? AND node_addr=?", username, app_name, node_addr
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN Node (app_name: #{app_name}) cannot be deleted!"
+    ensure
+      db.close if db
+    end
+  end
 end
