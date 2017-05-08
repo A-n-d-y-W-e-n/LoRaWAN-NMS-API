@@ -1,63 +1,71 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.5.0)
-      public_suffix (~> 2.0, >= 2.0.2)
-    cookiejar (0.3.3)
-    em-http-request (1.1.5)
-      addressable (>= 2.3.4)
-      cookiejar (!= 0.3.1)
-      em-socksify (>= 0.3)
-      eventmachine (>= 1.0.3)
-      http_parser.rb (>= 0.6.0)
-    em-socksify (0.3.1)
-      eventmachine (>= 1.0.0.beta.4)
-    eventmachine (1.2.1)
-    faye (1.1.2)
-      cookiejar (>= 0.3.0)
-      em-http-request (>= 0.3.0)
-      eventmachine (>= 0.12.0)
-      faye-websocket (>= 0.9.1)
-      multi_json (>= 1.0.0)
-      rack (>= 1.0.0)
-      websocket-driver (>= 0.5.1)
-    faye-websocket (0.10.5)
-      eventmachine (>= 0.12.0)
-      websocket-driver (>= 0.5.1)
-    http_parser.rb (0.6.0)
+    bond (0.5.1)
+    declarative (0.0.9)
+    declarative-option (0.1.0)
+    econfig (2.0.0)
+    hirb (0.7.3)
     json (2.1.0)
     mqtt (0.5.0)
     multi_json (1.12.1)
     net-ssh (4.1.0)
-    public_suffix (2.0.5)
-    puma (3.6.2)
+    puma (3.8.2)
     rack (1.6.5)
     rack-protection (1.5.3)
       rack
-    sequel (4.45.0)
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rake (12.0.0)
+    representable (3.0.4)
+      declarative (< 0.1.0)
+      declarative-option (< 0.2.0)
+      uber (< 0.2.0)
+    ripl (0.7.1)
+      bond (~> 0.5.1)
+    ripl-multi_line (0.3.1)
+      ripl (>= 0.3.6)
+    ripl-rack (0.2.1)
+      rack (>= 1.0)
+      rack-test (~> 0.6.2)
+      ripl (>= 0.7.0)
+    roar (1.1.0)
+      representable (~> 3.0.0)
+    sequel (4.46.0)
     sinatra (1.4.8)
       rack (~> 1.5)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
     sqlite3 (1.3.13)
     tilt (2.0.7)
-    websocket-driver (0.6.4)
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.2)
+    tux (0.3.0)
+      ripl (>= 0.3.5)
+      ripl-multi_line (>= 0.2.4)
+      ripl-rack (>= 0.2.0)
+      sinatra (>= 1.2.1)
+    uber (0.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  faye (= 1.1.2)
+  econfig
+  hirb
   json
   mqtt
+  multi_json
   net-ssh
   puma
   rack
+  rake
+  roar
   sequel
-  sinatra
+  sinatra (~> 1.4.8)
   sqlite3
+  tux
+
+RUBY VERSION
+   ruby 2.3.1p112
 
 BUNDLED WITH
    1.13.6

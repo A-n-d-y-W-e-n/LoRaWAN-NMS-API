@@ -2,7 +2,7 @@
 class LORAWAN_NMS_API < Sinatra::Base
 
   # create an application into DB
-  post "/app/:username/:app_name/:app_description/?" do
+  get "/app/:username/:app_name/:app_description/?" do
     username = params[:username]
     app_name = params[:app_name]
     app_description = params[:app_description]
@@ -22,6 +22,19 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.close if db
     end
   end
+
+  # get "/app/:username/:app_name/:app_description/?" do
+  #   username = params[:username]
+  #   app_name = params[:app_name]
+  #   app_description = params[:app_description]
+  #   begin
+  #     applications = DB[:applications] # Create a dataset
+  #     applications.insert(:username => username , :app_name => app_name, :app_description => app_description)
+  #   rescue Sequel::Error => e
+  #     p e.message
+  #     halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
+  #   end
+  # end
 
   # get all applications of a user from DB
   get "/app/:username/?" do

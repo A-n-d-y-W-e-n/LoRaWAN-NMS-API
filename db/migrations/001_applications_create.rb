@@ -9,6 +9,7 @@ Sequel.migration do
       String :app_name
       String :app_description
 
+      unique [:app_name]
     end
   end
 end
