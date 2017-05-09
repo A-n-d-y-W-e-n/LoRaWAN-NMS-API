@@ -9,13 +9,18 @@ class LORAWAN_NMS_API < Sinatra::Base
       data=[]
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "SELECT password FROM Users WHERE username = ? ",username do |row|
-        data << row.to_json
+        data << row
       end
-      return data
+      a = data.map {|s| {password:s[0]}}
+      puts a
+      return a.to_json
+
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
       halt 404, "LoRaWAN User (username: #{:username}) not found!"
+    ensure
+      db.close if db
     end
   end
 
