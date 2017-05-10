@@ -11,7 +11,7 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.execute "SELECT * FROM Gateways " do |row|
         data << row
       end
-      a = data.map {|s| {gw_name:s[1], gw_mac:s[2], gw_ip:s[3], gw_loc:s[4]}}
+      a = data.map {|s| {gw_name:s[1], gw_mac:s[2], gw_ip:s[3], gw_loc:s[4], gw_username:s[5]}}
       return a.to_json
     rescue SQLite3::Exception => e
       puts "Exception occurred"
@@ -21,20 +21,22 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the gateway info into DB
-  post "/gateway/:gateway_name/:gateway_mac/:gateway_ip/:gateway_loc/?" do
+  post "/add_gateway/?" do
     gateway_name = params[:gateway_name]
     gateway_mac = params[:gateway_mac]
     gateway_ip = params[:gateway_ip]
     gateway_loc = params[:gateway_loc]
+    gateway_username = params[:gateway_username]
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "CREATE TABLE IF NOT EXISTS Gateways (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                        gateway_name TEXT UNIQUE,
                                                        gateway_mac TEXT UNIQUE,
                                                        gateway_ip  TEXT UNIQUE,
-                                                       gateway_loc
+                                                       gateway_loc,
+                                                       username TEXT
                                                        )"
-      db.execute "INSERT INTO Gateways VALUES(null,?,?,?,?)", gateway_name, gateway_mac, gateway_ip, gateway_loc
+      db.execute "INSERT INTO Gateways VALUES(null,?,?,?,?,?)", gateway_name, gateway_mac, gateway_ip, gateway_loc, gateway_username
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -45,7 +47,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # delete the gateway info from DB
-  post "/delete_gateway/:gateway_mac/?" do
+  post "/delete_gateway/?" do
     gateway_mac = params[:gateway_mac]
     begin
       db = SQLite3::Database.open "./db/loramns.db"

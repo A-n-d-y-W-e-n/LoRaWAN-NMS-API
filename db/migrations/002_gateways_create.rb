@@ -9,6 +9,7 @@ Sequel.migration do
       String :gateway_mac, :null=>false
       String :gateway_ip, :null=>false
       String :gateway_loc, :null=>false
+      String :username, :null=>false
 
       unique [:gateway_name, :gateway_mac, :gateway_ip]
     end
