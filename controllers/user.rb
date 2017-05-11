@@ -8,10 +8,10 @@ class LORAWAN_NMS_API < Sinatra::Base
       content_type 'application/json'
       data=[]
       db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT password FROM Users WHERE username = ? ",username do |row|
+      db.execute "SELECT * FROM Users WHERE username = ? ",username do |row|
         data << row
       end
-      a = data.map {|s| {password:s[0]}}
+      a = data.map {|s| {user_email:s[2],password:s[3]} }
       puts a
       return a.to_json
 
