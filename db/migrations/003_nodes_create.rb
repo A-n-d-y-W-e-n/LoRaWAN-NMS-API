@@ -7,11 +7,9 @@ Sequel.migration do
       primary_key :id
       String :username, :null=>false
       String :app_name, :null=>false
-      String :node_addr, :null=>false
+      String :node_addr, :null=>false, :unique=>true
       String :node_nwkskey, :null=>false
       String :node_appskey, :null=>false
-      
-      unique [:node_addr]
     end
   end
 end

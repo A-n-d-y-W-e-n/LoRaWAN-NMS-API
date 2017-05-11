@@ -5,11 +5,9 @@ Sequel.migration do
   change do
     create_table(:users) do
       primary_key :id
-      String :username, :null=>false
-      String :user_email, :null=>false
+      String :username, :null=>false, :unique=>true
+      String :user_email, :null=>false, :unique=>true
       String :password, :null=>false
-
-      unique [:username, :user_email]
     end
   end
 end

@@ -5,11 +5,11 @@ require 'sequel'
 # configure :development do
 #   ENV['DATABASE_URL'] = 'sqlite://db/dev.db'
 # end
-#
+
 # configure :test do
 #   ENV['DATABASE_URL'] = 'sqlite://db/test.db'
 # end
-#
+
 ENV['DATABASE_URL'] = 'sqlite://db/loramns.db'
 
 configure do
