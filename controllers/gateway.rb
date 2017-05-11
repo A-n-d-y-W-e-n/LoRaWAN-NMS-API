@@ -3,20 +3,16 @@ class LORAWAN_NMS_API < Sinatra::Base
 
   # get the gateway info from gateway DB
   get "/gateway/?" do
-    # gateway_name = params[:gateway_name]
     begin
       content_type 'application/json'
       data=[]
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Gateways " do |row|
+      DB['SELECT * FROM Gateways '].each do |row|
         data << row
       end
-      a = data.map {|s| {gw_name:s[1], gw_mac:s[2], gw_ip:s[3], gw_loc:s[4], gw_username:s[5]}}
-      return a.to_json
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
-      halt 404, "LoRaWAN User (username: #{:username}) not found!"
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
+      halt 404, "LoRaWAN Gateway List not found!"
     end
   end
 
@@ -28,21 +24,11 @@ class LORAWAN_NMS_API < Sinatra::Base
     gateway_loc = params[:gateway_loc]
     gateway_username = params[:gateway_username]
     begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Gateways (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                       gateway_name TEXT UNIQUE,
-                                                       gateway_mac TEXT UNIQUE,
-                                                       gateway_ip  TEXT UNIQUE,
-                                                       gateway_loc,
-                                                       username TEXT
-                                                       )"
-      db.execute "INSERT INTO Gateways VALUES(null,?,?,?,?,?)", gateway_name, gateway_mac, gateway_ip, gateway_loc, gateway_username
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
-      halt 404, "LoRaWAN Gateway (MAC Address: #{gateway_mac}) cannot be created!"
-    ensure
-      db.close if db
+      DB[:gateways].insert(:gateway_name => gateway_name , :gateway_mac => gateway_mac , :gateway_ip => gateway_ip , :gateway_loc => gateway_loc , :username => gateway_username)
+      halt 200, "LoRaWAN Gateway (name: #{gateway_name}) was created!"
+    rescue Sequel::Error => e
+      p e.message
+      halt 404, "LoRaWAN Gateway (name: #{gateway_name}) cannot be created!"
     end
   end
 
@@ -50,14 +36,11 @@ class LORAWAN_NMS_API < Sinatra::Base
   post "/delete_gateway/?" do
     gateway_mac = params[:gateway_mac]
     begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "DELETE FROM Gateways WHERE gateway_mac=? ", gateway_mac
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
-      halt 404, "LoRaWAN Gateway (MAC Address: #{gateway_mac}) cannot be deleted!"
-    ensure
-      db.close if db
+      DB[:gateways].where(:gateway_mac => gateway_mac).delete
+      halt 200, "LoRaWAN Gateway (name: #{gateway_mac}) was deleted!"
+    rescue Sequel::Error => e
+      p e.message
+      halt 404, "LoRaWAN Gateway (name: #{gateway_mac}) cannot be deleted!"
     end
   end
 

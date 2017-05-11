@@ -8,18 +8,13 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Nodes WHERE username = ? AND app_name = ? ",username, app_name do |row|
+      DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ?",username, app_name].each do |row|
         data << row
       end
-      a = data.map {|s| {username:s[1],app_name:s[2],node_addr:s[3],node_nwkskey:s[4],node_appskey:s[5]} }
-      return a.to_json
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN Node (username: #{username}, app_name:#{app_name}) not found!"
-    ensure
-      db.close if db
     end
   end
 
@@ -30,14 +25,12 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr do |row|
-        data << row.to_json
+      DB["SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr].each do |row|
+        data << row
       end
-      return data
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN Node Data (address: #{:node_addr}) not found!"
     end
   end
@@ -49,23 +42,12 @@ class LORAWAN_NMS_API < Sinatra::Base
     node_addr = params[:node_addr]
     node_nwkskey = params[:node_nwkskey]
     node_appskey = params[:node_appskey]
-
     begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Nodes (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                           username TEXT,
-                                                           app_name TEXT,
-                                                           node_addr TEXT UNIQUE,
-                                                           node_nwkskey TEXT,
-                                                           node_appskey TEXT
-                                                           )"
-      db.execute "INSERT INTO Nodes VALUES(null,?,?,?,?,?)", username, app_name, node_addr, node_nwkskey, node_appskey
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      DB[:nodes].insert(:username => username , :app_name => app_name, :node_addr => node_addr, :node_nwkskey => node_nwkskey, :node_appskey => node_appskey)
+      halt 200, "LoRaWAN Node (app_name: #{app_name}) was created!"
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN Node (app_name: #{app_name}) cannot be created!"
-    ensure
-      db.close if db
     end
   end
 
@@ -75,14 +57,11 @@ class LORAWAN_NMS_API < Sinatra::Base
     app_name = params[:app_name]
     node_addr = params[:node_addr]
     begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "DELETE FROM Nodes WHERE username=? AND app_name=? AND node_addr=?", username, app_name, node_addr
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      DB[:nodes].where(:username=>username, :app_name=>app_name, :node_addr=>node_addr).delete
+      halt 200, "LoRaWAN Node (app_name: #{app_name}) was deleted!"
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN Node (app_name: #{app_name}) cannot be deleted!"
-    ensure
-      db.close if db
     end
   end
 

@@ -7,20 +7,13 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "SELECT * FROM Users WHERE username = ? ",username do |row|
+      DB['SELECT * FROM Users WHERE username = ?',username].each do |row|
         data << row
       end
-      a = data.map {|s| {user_email:s[2],password:s[3]} }
-      puts a
-      return a.to_json
-
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN User (username: #{:username}) not found!"
-    ensure
-      db.close if db
     end
   end
 
@@ -30,19 +23,11 @@ class LORAWAN_NMS_API < Sinatra::Base
     user_email = params[:user_email]
     password = params[:password]
     begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Users (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                    username TEXT UNIQUE,
-                                                    user_email TEXT UNIQUE,
-                                                    password TEXT
-                                                    )"
-      db.execute "INSERT INTO Users VALUES(null,?,?,?)", username, user_email, password
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
+      DB[:users].insert(:username => username , :user_email => user_email, :password => password)
+      halt 200, "LoRaWAN User (username: #{username}) was created!"
+    rescue Sequel::Error => e
+      p e.message
       halt 404, "LoRaWAN User (username: #{username}) cannot be created!"
-    ensure
-      db.close if db
     end
   end
 

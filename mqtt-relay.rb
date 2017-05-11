@@ -6,8 +6,6 @@ require 'json'
 require 'sqlite3'
 
 GW_MAC = "1C497B4989A8"
-# USERNAME = "Andy"
-# APPLICATION = "TEST"
 route = []
 
 connect_info = {
