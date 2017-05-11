@@ -2,7 +2,7 @@
 class LORAWAN_NMS_API < Sinatra::Base
 
   # get all nodes of an application of a user from DB
-  get "/node/:username/:app_name/?" do
+  get "/node/?" do
     username = params[:username]
     app_name = params[:app_name]
     begin
@@ -12,7 +12,7 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.execute "SELECT * FROM Nodes WHERE username = ? AND app_name = ? ",username, app_name do |row|
         data << row
       end
-      a = data.map {|s| {username:s[1],app_name:s[2], node_addr:s[3]} }
+      a = data.map {|s| {username:s[1],app_name:s[2],node_addr:s[3],node_nwkskey:s[4],node_appskey:s[5]} }
       return a.to_json
     rescue SQLite3::Exception => e
       puts "Exception occurred"
@@ -24,7 +24,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # get the last received data of a node from DB
-  get "/node_data/:node_addr/?" do
+  get "/node_data/?" do
     node_addr = '00000000' + params[:node_addr]
     puts node_addr
     begin
@@ -43,18 +43,23 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the info of a node into DB
-  post "/node/:username/:app_name/:node_addr/?" do
+  post "/add_node/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
+    node_nwkskey = params[:node_nwkskey]
+    node_appskey = params[:node_appskey]
+
     begin
       db = SQLite3::Database.open "./db/loramns.db"
       db.execute "CREATE TABLE IF NOT EXISTS Nodes (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                            username TEXT,
                                                            app_name TEXT,
-                                                           node_addr TEXT UNIQUE
+                                                           node_addr TEXT UNIQUE,
+                                                           node_nwkskey TEXT,
+                                                           node_appskey TEXT
                                                            )"
-      db.execute "INSERT INTO Nodes VALUES(null,?,?,?)", username, app_name, node_addr
+      db.execute "INSERT INTO Nodes VALUES(null,?,?,?,?,?)", username, app_name, node_addr, node_nwkskey, node_appskey
     rescue SQLite3::Exception => e
       puts "Exception occurred"
       puts e
@@ -65,7 +70,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # delete a node of an app
-  post "/delete_node/:username/:app_name/:node_addr/?" do
+  post "/delete_node/?" do
     username = params[:username]
     app_name = params[:app_name]
     node_addr = params[:node_addr]
@@ -80,4 +85,5 @@ class LORAWAN_NMS_API < Sinatra::Base
       db.close if db
     end
   end
+
 end

@@ -2,7 +2,7 @@
 class LORAWAN_NMS_API < Sinatra::Base
 
   # insert the key of the node into gateway DB
-  post "/node/abp/:DevAddr/:NwkSKey/:AppSKey/?" do
+  post "/add_node/abp/?" do
     @hostname = '192.168.88.1'
     @username = 'root'
     @password = 'gemtek'
@@ -21,7 +21,8 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  post "/delete_node/abp/:DevAddr/?" do
+  # delete the key of the node from gateway DB
+  post "/delete_node/abp/?" do
     @hostname = '192.168.88.1'
     @username = 'root'
     @password = 'gemtek'

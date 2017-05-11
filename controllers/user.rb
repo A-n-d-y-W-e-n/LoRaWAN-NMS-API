@@ -2,7 +2,7 @@
 class LORAWAN_NMS_API < Sinatra::Base
 
   # get the user info from DB
-  get "/user/:username/?" do
+  get "/user/?" do
     username = params[:username]
     begin
       content_type 'application/json'
@@ -25,7 +25,7 @@ class LORAWAN_NMS_API < Sinatra::Base
   end
 
   # insert the user info into DB
-  post "/user/:username/:user_email/:password/?" do
+  post "/create_user/?" do
     username = params[:username]
     user_email = params[:user_email]
     password = params[:password]

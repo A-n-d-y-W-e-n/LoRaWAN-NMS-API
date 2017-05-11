@@ -1,43 +1,8 @@
 # frozen_string_literal: true
 class LORAWAN_NMS_API < Sinatra::Base
 
-  # create an application into DB
-  post "/app/:username/:app_name/:app_description/?" do
-    username = params[:username]
-    app_name = params[:app_name]
-    app_description = params[:app_description]
-    begin
-      db = SQLite3::Database.open "./db/loramns.db"
-      db.execute "CREATE TABLE IF NOT EXISTS Applications (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                           username TEXT,
-                                                           app_name TEXT UNIQUE,
-                                                           app_description TEXT
-                                                           )"
-      db.execute "INSERT INTO Applications VALUES(null,?,?,?)", username, app_name, app_description
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
-      halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
-    ensure
-      db.close if db
-    end
-  end
-
-  # post "/app/:username/:app_name/:app_description/?" do
-  #   username = params[:username]
-  #   app_name = params[:app_name]
-  #   app_description = params[:app_description]
-  #   begin
-  #     applications = DB[:applications] # Create a dataset
-  #     applications.insert(:username => username , :app_name => app_name, :app_description => app_description)
-  #   rescue Sequel::Error => e
-  #     p e.message
-  #     halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
-  #   end
-  # end
-
   # get all applications of a user from DB
-  get "/app/:username/?" do
+  get "/app/?" do
     username = params[:username]
     begin
       content_type 'application/json'
@@ -58,8 +23,43 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
+  # create an application into DB
+  post "/create_app/?" do
+    username = params[:username]
+    app_name = params[:app_name]
+    app_description = params[:app_description]
+    begin
+      db = SQLite3::Database.open "./db/loramns.db"
+      db.execute "CREATE TABLE IF NOT EXISTS Applications (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                           username TEXT,
+                                                           app_name TEXT UNIQUE,
+                                                           app_description TEXT
+                                                           )"
+      db.execute "INSERT INTO Applications VALUES(null,?,?,?)", username, app_name, app_description
+    rescue SQLite3::Exception => e
+      puts "Exception occurred"
+      puts e
+      halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
+    ensure
+      db.close if db
+    end
+  end
+
+  # post "/app/?" do
+  #   username = params[:username]
+  #   app_name = params[:app_name]
+  #   app_description = params[:app_description]
+  #   begin
+  #     applications = DB[:applications] # Create a dataset
+  #     applications.insert(:username => username , :app_name => app_name, :app_description => app_description)
+  #   rescue Sequel::Error => e
+  #     p e.message
+  #     halt 404, "LoRaWAN Applications (name: #{app_name}) cannot be created!"
+  #   end
+  # end
+
   # delete an application into DB
-  post "/delete_app/:username/:app_name/?" do
+  post "/delete_app/?" do
     username = params[:username]
     app_name = params[:app_name]
     begin
