@@ -11,6 +11,7 @@ class LORAWAN_NMS_API < Sinatra::Base
       DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ?",username, app_name].each do |row|
         data << row
       end
+      puts data.to_json.length
       return data.to_json
     rescue Sequel::Error => e
       p e.message
