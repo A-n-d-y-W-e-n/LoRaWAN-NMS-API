@@ -8,7 +8,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ?",username, app_name].each do |row|
+      DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ? ORDER BY id",username, app_name].each do |row|
         data << row
       end
       puts data.to_json.length

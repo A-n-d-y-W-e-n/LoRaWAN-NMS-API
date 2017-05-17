@@ -6,7 +6,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB['SELECT * FROM Gateways '].each do |row|
+      DB['SELECT * FROM Gateways ORDER BY id'].each do |row|
         data << row
       end
       return data.to_json
