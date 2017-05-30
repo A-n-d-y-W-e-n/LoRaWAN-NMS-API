@@ -6,7 +6,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB['SELECT * FROM Gateways ORDER BY id'].each do |row|
+      DB['SELECT * FROM Gateways ORDER BY ID'].each do |row|
         data << row
       end
       return data.to_json
@@ -41,6 +41,22 @@ class LORAWAN_NMS_API < Sinatra::Base
     rescue Sequel::Error => e
       p e.message
       halt 404, "LoRaWAN Gateway (name: #{gateway_mac}) cannot be deleted!"
+    end
+  end
+
+  # get gateway log
+  get "/gateway_log/?" do
+    gateway_ip = params[:gateway_ip]
+    begin
+      content_type 'application/json'
+      data=[]
+      DB["SELECT MAX(rssi), MAX(snr) FROM Nodes_data WHERE gwip = ?",gateway_ip].each do |row|
+        data << row
+      end
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
+      halt 404, "LoRaWAN Gateway Log (address: #{gateway_ip}) not found!"
     end
   end
 

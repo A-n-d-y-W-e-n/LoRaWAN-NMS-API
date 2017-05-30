@@ -8,7 +8,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ? ORDER BY id",username, app_name].each do |row|
+      DB["SELECT * FROM Nodes WHERE username = ? AND app_name = ? ORDER BY ID",username, app_name].each do |row|
         data << row
       end
       puts data.to_json.length
@@ -26,13 +26,13 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB["SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 1",node_addr].each do |row|
+      DB["SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID ",node_addr].each do |row|
         data << row
       end
       return data.to_json
     rescue Sequel::Error => e
       p e.message
-      halt 404, "LoRaWAN Node Data (address: #{:node_addr}) not found!"
+      halt 404, "LoRaWAN Node Data (address: #{node_addr}) not found!"
     end
   end
 
