@@ -50,7 +50,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB["SELECT MAX(rssi), MAX(snr) FROM Nodes_data WHERE gwip = ?",gateway_ip].each do |row|
+      DB["SELECT MIN(rssi), MIN(snr) FROM Nodes_data WHERE gwip = ?",gateway_ip].each do |row|
         data << row
       end
       return data.to_json
