@@ -47,11 +47,3 @@ MQTT::Client.connect(connect_info) do |c|
     end
   end
 end
-
-
-
-# begin
-#   main()
-# rescue
-#   next    # main() again
-# end
