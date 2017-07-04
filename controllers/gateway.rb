@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class LORAWAN_NMS_API < Sinatra::Base
 
-  # get the gateway info from gateway DB
+  # get the gateway list
   get "/gateway/?" do
     begin
       content_type 'application/json'
@@ -16,7 +16,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # insert the gateway info into DB
+  # add a new gateway
   post "/add_gateway/?" do
     gateway_name = params[:gateway_name]
     gateway_mac = params[:gateway_mac]

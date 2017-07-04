@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class LORAWAN_NMS_API < Sinatra::Base
 
-  # get all applications of a user from DB
+  # get the application list of a user
   get "/app/?" do
     username = params[:username]
     begin
@@ -18,7 +18,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # create an application into DB
+  # create a new application
   post "/create_app/?" do
     username = params[:username]
     app_name = params[:app_name]
@@ -32,7 +32,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
-  # delete an application from DB
+  # delete an application
   post "/delete_app/?" do
     username = params[:username]
     app_name = params[:app_name]
@@ -45,4 +45,20 @@ class LORAWAN_NMS_API < Sinatra::Base
     end
   end
 
+  # count the number of nodes
+  get "/app/node_number/?" do
+    username = params[:username]
+    app_name = params[:app_name]
+    begin
+      content_type 'application/json'
+      data=[]
+      DB['SELECT COUNT(app_name) FROM Nodes WHERE app_name=? AND username=?',app_name,username].each do |row|
+        data << row
+      end
+      return data.to_json
+    rescue Sequel::Error => e
+      p e.message
+      halt 404, "LoRaWAN Application Nodes (name: #{app_name}) cannot be counted!"
+    end
+  end
 end
