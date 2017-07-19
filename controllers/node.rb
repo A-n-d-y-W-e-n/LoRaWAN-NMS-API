@@ -26,7 +26,7 @@ class LORAWAN_NMS_API < Sinatra::Base
     begin
       content_type 'application/json'
       data=[]
-      DB["SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID LIMIT 10",node_addr].each do |row|
+      DB["SELECT * FROM Nodes_data WHERE macAddr = ? ORDER BY ID DESC LIMIT 10",node_addr].each do |row|
         data << row
       end
       return data.to_json
